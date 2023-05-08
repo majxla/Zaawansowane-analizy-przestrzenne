@@ -12,7 +12,6 @@ gminy_18 = read_sf("gminy/gminy_lubelskie.gpkg")
 gestosc_06 = read.csv("gestosc_zaludnienia_2006/gestosc_zaludnienia_2006_gminy.csv", encoding = "UTF-8", sep=";")
 gestosc_18 = read.csv("gestosc_zaludnienia_2018/gestosc_zaludnienia_2018_gminy.csv", encoding = "UTF-8", sep=";")
 
-# setdiff(gestosc_18$Kod, gestosc_06$Kod)
 
 clc_lub_06 = read_sf("clc2006/clc_06_lubelskie.gpkg")
 clc_lub_18 = read_sf("clc2018/clc_18_lubelskie.gpkg")
@@ -84,7 +83,7 @@ for (name in as.character(codes18)) {
 
 # kopia
 clc_06_agg_c = clc_06_agg_2
-clc_06_agg_c = st_drop_geometry(clc_06_agg_c) # zrzucenie geometrii bo na mnie krzyczy coś dalej i i tak nie jest tu potrzebna
+clc_06_agg_c = st_drop_geometry(clc_06_agg_c) # zrzucenie geometrii
 
 clc_18_agg_c = clc_18_agg_2
 clc_18_agg_c = st_drop_geometry(clc_18_agg_c)
@@ -156,13 +155,13 @@ gestosc_18_c = gestosc_18_c[ , c(1, 5) ]
 
 
 
-# trzeba zmienić typ kolumny kod w ludnosci zeby sie zgadzala z typem kolumny w gminach bo inaczej krzyczy 
+# trzeba zmienić typ kolumny kod w ludnosci zeby sie zgadzala z typem kolumny w gminach
 gestosc_06_c$Kod = as.character(gestosc_06_c$Kod)
 gestosc_18_c$Kod = as.character(gestosc_18_c$Kod)
 
 
 
-# i trzeba dodać 0 na początek wartości w tej kolumnie bo durny excel usuwa 0 z początku
+# i trzeba dodać 0 na początek wartości w tej kolumnie bo excel usuwa 0 z początku
 gestosc_06_c$JPT_KOD_JE = paste0("0", gestosc_06_c$Kod)
 gestosc_18_c$JPT_KOD_JE = paste0("0", gestosc_18_c$Kod)
 
@@ -187,10 +186,6 @@ library(mlr3learners)
 library(mlr3spatiotempcv)
 
 
-
-gminy_06_lud[is.na(gminy_18_lud$os_km2), ]
-# filter(gminy_06_lud, JPT_KOD_JE == "0602011")
-nr = which(gminy_06_lud$JPT_KOD_JE == "0604011")
 
 gmin06 = st_centroid(gminy_06_lud)
 gmin06$SHAPE_AREA = as.numeric(gmin06$SHAPE_AREA)
@@ -232,8 +227,6 @@ learner$train(task)
 model = learner$model
 
 
-
-# predyckja - nie ruszone, wymagane 2018 - predictors
 library(terra)
 
 pred_cv = terra::predict(model, gminy_bez_kod18)
@@ -243,8 +236,6 @@ gminy_bez_kod18[57, 16]
 gminy_bez_kod06[57, ]
 
 filter(gminy_06_)
-
-# plot(pred_cv)
 
 
 # CSV PORÓWNANIE
